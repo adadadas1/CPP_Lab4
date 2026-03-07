@@ -2,13 +2,10 @@
 
 #include <memory>
 
-// Однонаправленный список, параметризованный аллокатором.
-// Поддерживает push_back, итерацию вперёд, size() и empty().
 template <typename T, typename Alloc = std::allocator<T>>
 class MyContainer
 {
 private:
-    // Узел списка
     struct Node
     {
         T     value;
@@ -18,16 +15,14 @@ private:
         explicit Node(T&& v)      : value(std::move(v)) {}
     };
 
-    // Перебиндиваем аллокатор на тип Node
     using NodeAlloc = typename std::allocator_traits<Alloc>::template rebind_alloc<Node>;
     using Traits    = std::allocator_traits<NodeAlloc>;
 
-    NodeAlloc  m_alloc;    // аллокатор для узлов
+    NodeAlloc  m_alloc;
     Node*      m_head  = nullptr;
     Node*      m_tail  = nullptr;
     std::size_t m_size = 0;
 
-    // Создаём узел через аллокатор
     Node* make_node(const T& v)
     {
         Node* p = Traits::allocate(m_alloc, 1);
@@ -41,7 +36,6 @@ private:
         return p;
     }
 
-    // Уничтожаем и освобождаем узел
     void free_node(Node* p)
     {
         Traits::destroy(m_alloc, p);
@@ -49,12 +43,9 @@ private:
     }
 
 public:
-    // ---- Конструкторы ----
-
     explicit MyContainer(const Alloc& alloc = Alloc())
         : m_alloc(alloc) {}
 
-    // Перемещающий конструктор
     MyContainer(MyContainer&& other) noexcept
         : m_alloc(std::move(other.m_alloc))
         , m_head(other.m_head)
@@ -66,7 +57,6 @@ public:
         other.m_size = 0;
     }
 
-    // Перемещающее присваивание
     MyContainer& operator=(MyContainer&& other) noexcept
     {
         if (this != &other) {
@@ -82,13 +72,10 @@ public:
         return *this;
     }
 
-    // Запрещаем копирование (аллокатор разделяем, но данные — нет)
     MyContainer(const MyContainer&)            = delete;
     MyContainer& operator=(const MyContainer&) = delete;
 
     ~MyContainer() { clear(); }
-
-    // ---- Добавление элементов ----
 
     void push_back(const T& v)
     {
@@ -114,12 +101,8 @@ public:
         ++m_size;
     }
 
-    // ---- Размер ----
-
     std::size_t size()  const noexcept { return m_size; }
     bool        empty() const noexcept { return m_size == 0; }
-
-    // ---- Очистка ----
 
     void clear()
     {
@@ -132,8 +115,6 @@ public:
         m_head = m_tail = nullptr;
         m_size = 0;
     }
-
-    // ---- Итератор (forward) ----
 
     class Iterator
     {
@@ -166,7 +147,6 @@ public:
         bool operator!=(const Iterator& o) const { return m_ptr != o.m_ptr; }
     };
 
-    // Константный итератор
     class ConstIterator
     {
         const Node* m_ptr;

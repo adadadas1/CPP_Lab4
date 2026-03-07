@@ -6,14 +6,18 @@ project(lab4 VERSION 0.0.${PATCH_VERSION})
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+if(MSVC)
+    add_compile_options(/W4)
+else()
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
 
 # ---- Основная программа ----
 add_executable(allocator_demo main.cpp)
 target_include_directories(allocator_demo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # ---- Тесты ----
-find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+find_package(Boost CONFIG REQUIRED COMPONENTS unit_test_framework)
 
 add_executable(test_lab4 test_lab4.cpp)
 target_include_directories(test_lab4 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
