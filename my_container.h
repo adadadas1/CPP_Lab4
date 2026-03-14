@@ -77,26 +77,26 @@ public:
 
     ~MyContainer() { clear(); }
 
-    void push_back(const T& v)
+    void push_back(const T& value)
     {
-        Node* n = make_node(v);
+        Node* newNode = make_node(value);
         if (!m_tail) {
-            m_head = m_tail = n;
+            m_head = m_tail = newNode;
         } else {
-            m_tail->next = n;
-            m_tail       = n;
+            m_tail->next = newNode;
+            m_tail       = newNode;
         }
         ++m_size;
     }
 
-    void push_back(T&& v)
+    void push_back(T&& value)
     {
-        Node* n = make_node(std::move(v));
+        Node* newNode = make_node(std::move(value));
         if (!m_tail) {
-            m_head = m_tail = n;
+            m_head = m_tail = newNode;
         } else {
-            m_tail->next = n;
-            m_tail       = n;
+            m_tail->next = newNode;
+            m_tail       = newNode;
         }
         ++m_size;
     }
